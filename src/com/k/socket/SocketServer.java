@@ -34,17 +34,18 @@ public class SocketServer
 	public static void main(String[] args)
 	{
 		int port = 7676;
-		SocketServer server = new SocketServer(port);
+		SocketServer server = new SocketServer(port, true);
 		server.start();
 	}
 
 	private int port;
+	private boolean keepAlive;
 	private volatile boolean running = false;
 	private long receiveTimeDelay = 3000;
 	private ConcurrentHashMap<Class<Object>, ObjectAction> actionMapping = new ConcurrentHashMap<Class<Object>, ObjectAction>();
 	private Thread connWatchDog;
 
-	public SocketServer(int port)
+	public SocketServer(int port, boolean keepAlive)
 	{
 		this.port = port;
 	}

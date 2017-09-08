@@ -65,7 +65,6 @@ public class SocketClient
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -78,6 +77,12 @@ public class SocketClient
 		oos.flush();
 	}
 
+	/**
+	 * 监听返回信息
+	 * 
+	 * @author ken_8
+	 * 2017年9月8日 上午12:04:50
+	 */
 	class ReceiveWatchDog implements Runnable
 	{
 		public void run()
