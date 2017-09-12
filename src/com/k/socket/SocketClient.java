@@ -44,6 +44,11 @@ public class SocketClient
 		this.port = port;
 		this.keepAlive = keepAlive;
 	}
+	
+	public Socket getConnect()
+	{
+		return socket;
+	}
 
 	public void start() throws UnknownHostException, IOException
 	{
