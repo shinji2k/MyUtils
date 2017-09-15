@@ -59,7 +59,7 @@ public class FileHelper
 					res = currLine;
 					break;
 				}
-				lineNum++;
+				lineCnt++;
 			}
 		}
 		catch (Exception e)

@@ -45,6 +45,35 @@ public class CollectionUtils
 	}
 
 	/**
+	 * 将Byte[]数组拆箱为byte[]
+	 * @param b
+	 * @return
+	 * @author zhaokai
+	 * 2017年9月14日 下午4:49:48
+	 */
+	public static byte[] ByteTobyte(Byte[] b)
+	{
+		byte[] res = new byte[b.length];
+		for (int i = 0; i < b.length; i++)
+			res[i] = b[i];
+		return res;
+	}
+	
+	/**
+	 * 将byte的list转为byte数组
+	 * @param list
+	 * @return
+	 * @author zhaokai
+	 * 2017年9月14日 下午4:51:47
+	 */
+	public static byte[] toByteArray(List<Byte> list)
+	{
+		byte[] res = new byte[list.size()];
+		for (int i = 0; i < list.size(); i++)
+			res[i] = list.get(i);
+		return res;
+	}
+	/**
 	 * 判断a、b两个数组是否相等。byte重载
 	 *
 	 * @param a
