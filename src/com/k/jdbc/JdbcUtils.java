@@ -123,7 +123,7 @@ public class JdbcUtils
 				entityList.add(entity);
 			}
 		}
-		catch (InstantiationException | IllegalAccessException e)
+		catch (InstantiationException  e)
 		{
 			e.printStackTrace();
 			System.out.println("创建实体类实例失败！！");
@@ -137,6 +137,16 @@ public class JdbcUtils
 		{
 			e.printStackTrace();
 			System.out.println("调用实体类Set方法失败！！");
+		}
+		catch (IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			System.out.println("创建实体类实例失败！！");
+		}
+		catch (IllegalAccessException e)
+		{
+			e.printStackTrace();
+			System.out.println("创建实体类实例失败！！");
 		}
 		finally
 		{
@@ -189,11 +199,6 @@ public class JdbcUtils
 				}
 			}
 		}
-		catch (InstantiationException | IllegalAccessException e)
-		{
-			e.printStackTrace();
-			System.out.println("创建实体类实例失败！！");
-		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -203,6 +208,21 @@ public class JdbcUtils
 		{
 			e.printStackTrace();
 			System.out.println("调用实体类Set方法失败！！");
+		}
+		catch (IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			System.out.println("创建实体类实例失败！！");
+		}
+		catch (IllegalAccessException e)
+		{
+			e.printStackTrace();
+			System.out.println("创建实体类实例失败！！");
+		}
+		catch (InstantiationException e)
+		{
+			e.printStackTrace();
+			System.out.println("创建实体类实例失败！！");
 		}
 		finally
 		{
@@ -286,7 +306,17 @@ public class JdbcUtils
 			e.printStackTrace();
 			System.out.println("SQL执行错误！！");
 		}
-		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		catch (IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			System.out.println("调用对象的get/set方法错误！！！");
+		}
+		catch (IllegalAccessException e)
+		{
+			e.printStackTrace();
+			System.out.println("调用对象的get/set方法错误！！！");
+		}
+		catch (InvocationTargetException e)
 		{
 			e.printStackTrace();
 			System.out.println("调用对象的get/set方法错误！！！");
@@ -367,7 +397,17 @@ public class JdbcUtils
 			e.printStackTrace();
 			System.out.println("SQL执行错误！！");
 		}
-		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		catch (IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			System.out.println("调用对象的get/set方法错误！！！");
+		}
+		catch (IllegalAccessException e)
+		{
+			e.printStackTrace();
+			System.out.println("调用对象的get/set方法错误！！！");
+		}
+		catch (InvocationTargetException e)
 		{
 			e.printStackTrace();
 			System.out.println("调用对象的get/set方法错误！！！");

@@ -5,12 +5,91 @@ package com.k.util;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * @author zhaokai 2016年9月30日 下午4:52:11
  */
 public class ByteUtils
 {
+	/**
+	 * 动环SU中点分ID到byte[]的转换
+	 * @param scadaId
+	 * @return
+	 * @author zhaokai
+	 * @create 2017年12月5日 下午4:54:45
+	 */
+	public static byte[] scadaIdToBytes(String scadaId)
+	{
+		String[] idParts = scadaId.split("\\.");
+		if (idParts.length != 4)	//点分格式错误
+			return null;
+		int aa = Integer.parseInt(idParts[0]) << 27;
+		int bbb = Integer.parseInt(idParts[1]) << 17;
+		int cc = Integer.parseInt(idParts[2]) << 11;
+		int ddd = Integer.parseInt(idParts[3]) & 0x7FF;
+		
+		int intId = aa | bbb | cc | ddd;
+		
+		byte[] b = getBytes(intId);
+		return b;
+	}
+	
+	/**
+	 * byte[]到动环点分ID的转换
+	 * @param src
+	 * @return
+	 * @author zhaokai
+	 * @create 2017年12月6日 下午7:58:00
+	 */
+	public static String bytesToScadaId(byte[] src)
+	{
+		if (src.length != 4)
+			return null;
+		int intId = (src[0] << 24) | (src[1]) << 16 | (src[2] << 8) | src[3]; 
+		String aa = "" + ((intId & 0xF8000000) >> 27);
+		String bbb = "" + ((intId & 0x7FE0000) >> 17);
+		String cc = "" + ((intId & 0x1F800) >> 11);
+		String ddd = "" + (intId & 0x7FF);
+		
+		String scadaIdString = aa + "." + bbb + "." + cc + "." + ddd;
+		return scadaIdString;
+	}
+	
+	/**
+	 * 将byte[]转为asc码，每字节采用2位16进制数计算.16进制中的字母将转为大写计算asc值
+	 * 
+	 * @param src
+	 * @return
+	 * zhaokai
+	 * 2017年9月24日 上午11:32:56
+	 */
+	public static byte[] byteToAsc(byte[] src)
+	{
+		if (src == null || src.length == 0)
+			return null;
+		StringBuffer hexBuffer = new StringBuffer();
+		for (int i = 0; i < src.length; i++)
+		{
+			if (src[i] == 0)
+			{
+				hexBuffer.append("00");
+			}
+			else
+			{
+				String hexString = byteToHexString(src[i]).toUpperCase();
+				if (hexString.length() == 1)
+					hexString = "0" + hexString;
+				hexBuffer.append(hexString);
+			}
+		}
+		
+		char[] ascArray = hexBuffer.toString().toCharArray();
+		byte[] ret = new byte[ascArray.length];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = (byte) ascArray[i];
+		return ret;
+	}
 
 	/**
 	 * 将16位的int高低位互换，返回2字节长度的byte数组。 主要应用于大端机报文发送时调整字节顺序
@@ -27,19 +106,43 @@ public class ByteUtils
 	}
 
 	/**
-	 * 将byte数组拼接为字符串(内容为16进制显示)返回
+	 * 将byte数组(重载)转为内容为16进制显示的字符串返回，各元素空格分割
 	 * 
 	 * @param src
 	 * @return
 	 * @author zhaokai
 	 * @date 2016年9月30日 下午4:57:17
 	 */
-	public static String byteArraytoHexString(byte[] src)
+	public static String byteToHexString(byte[] src)
 	{
+		if (src.length == 0)
+			return null;
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < src.length; i++)
-			sb.append(" " + Integer.toHexString(src[i] & 0xFF));
+			sb.append(" " + byteToHexString(src[i]));
 		return sb.toString().substring(1);
+	}
+	
+	/**
+	 * 将byte数组(重载)转为内容为16进制显示的字符串返回，各元素空格分割
+	 * @param src
+	 * @return
+	 * @author ken_8
+	 * 2017年9月21日 下午10:26:01
+	 */
+	public static String byteToHexString(List<Byte> src)
+	{
+		if (src.size() == 0)
+			return null;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < src.size(); i++)
+			sb.append(" " + byteToHexString(src.get(i)));
+		return sb.substring(1).toString();
+	}
+	
+	public static String byteToHexString(byte src)
+	{
+		return Integer.toHexString(src & 0xFF);
 	}
 
 	/**
@@ -209,6 +312,13 @@ public class ByteUtils
 		return (char) ((0xff & bytes[0]) | (0xff00 & (bytes[1] << 8)));
 	}
 
+	/**
+	 * byte[]数组转int
+	 * @param bytes
+	 * @return
+	 * @author zhaokai
+	 * @create 2017年12月7日 下午5:20:38
+	 */
 	public static int getInt(byte[] bytes)
 	{
 		return (int) (((bytes[0] & 0xFF) << 24) | ((bytes[0 + 1] & 0xFF) << 16) | ((bytes[0 + 2] & 0xFF) << 8)
@@ -217,10 +327,21 @@ public class ByteUtils
 
 	public static long getLong(byte[] bytes)
 	{
-		return (0xffL & (long) bytes[0]) | (0xff00L & ((long) bytes[1] << 8)) | (0xff0000L & ((long) bytes[2] << 16))
-				| (0xff000000L & ((long) bytes[3] << 24)) | (0xff00000000L & ((long) bytes[4] << 32))
-				| (0xff0000000000L & ((long) bytes[5] << 40)) | (0xff000000000000L & ((long) bytes[6] << 48))
-				| (0xff00000000000000L & ((long) bytes[7] << 56));
+		long res = 0;
+		if (bytes.length == 8)
+		{
+			res = (0xffL & (long) bytes[0]) | (0xff00L & ((long) bytes[1] << 8)) | (0xff0000L & ((long) bytes[2] << 16))
+					| (0xff000000L & ((long) bytes[3] << 24)) | (0xff00000000L & ((long) bytes[4] << 32))
+					| (0xff0000000000L & ((long) bytes[5] << 40)) | (0xff000000000000L & ((long) bytes[6] << 48))
+					| (0xff00000000000000L & ((long) bytes[7] << 56));
+		}
+		else
+		{
+			res = (0xffL & (long) bytes[0]) | (0xff00L & ((long) bytes[1] << 8)) | (0xff0000L & ((long) bytes[2] << 16))
+			| (0xff000000L & ((long) bytes[3] << 24));
+		}
+			
+		return res;
 	}
 
 	public static float getFloat(byte[] bytes)
