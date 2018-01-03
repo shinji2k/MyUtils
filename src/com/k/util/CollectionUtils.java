@@ -12,7 +12,7 @@ import java.util.List;
 public class CollectionUtils
 {
 	/**
-	 * 拷贝一个List到另一个List。若dest list为空则返回一个新List
+	 * 拷贝一个List到另一个List。并返回一个新List
 	 * 
 	 * @param src
 	 * @param dest
@@ -22,9 +22,31 @@ public class CollectionUtils
 	 */
 	public static <E> List<E> copyList(List<E> src, List<E> dest)
 	{
-		List<E> res = null;
+		List<E> res = new ArrayList<E>();
 		if (dest == null)
-			res = new ArrayList<E>();
+			dest = new ArrayList<E>();
+			
+		for (int i = 0; i < src.size(); i++)
+		{
+			res.add(src.get(i));
+			dest.add(src.get(i));
+		}
+		return res;
+	}
+	
+	/**
+	 * 拷贝一个List到另一个List。返回一个新List
+	 * 
+	 * @param src
+	 * @param dest
+	 * @return
+	 * @author zhaokai
+	 * @create 2017年10月31日 下午6:37:53
+	 */
+	public static <E> List<E> copyList(List<E> src)
+	{
+		List<E> res = new ArrayList<E>();
+			
 		for (int i = 0; i < src.size(); i++)
 			res.add(src.get(i));
 		return res;
@@ -64,13 +86,18 @@ public class CollectionUtils
 	 * @author zhaokai
 	 * @version 2017年2月14日 下午5:07:10
 	 */
-	public static List<Byte> copyArrayToList(List<Byte> list, byte[] array)
+	public static List<Byte> copyArrayToList(List<Byte> list, byte[] array, int... len)
 	{
 		if (array == null || array.length == 0)
 			return list;
 		if (list == null)
 			list = new ArrayList<Byte>();
-		for (int i = 0; i < array.length; i++)
+		int loop = 0;
+		if (len == null || len.length == 0)
+			loop = array.length;
+		else
+			loop = len[0];
+		for (int i = 0; i < loop; i++)
 			list.add(array[i]);
 		return list;
 	}
