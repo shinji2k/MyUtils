@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.k.http.entity.Response;
+import com.k.util.CollectionUtils;
 
 /**
  * 
@@ -31,9 +33,10 @@ public class HttpClient
 	 * @param requestProperty
 	 * @return
 	 * @author zhaokai
+	 * @throws Exception 
 	 * @create 2018年1月3日 上午10:16:21
 	 */
-	public static Response sendPost(String url, String param, Map<String, String> requestProperty)
+	public static Response sendPost(String url, String param, Map<String, String> requestProperty) throws Exception
 	{
 		InputStream in = null;
 		OutputStream out = null;
@@ -86,8 +89,8 @@ public class HttpClient
 
 			// 获取所有响应头字段并整理、遍历
 			Map<String, List<String>> respHeaderMap = conn.getHeaderFields();
-			response.setRespHeaderMap(respHeaderMap);
-			int cttLen = 0;
+
+			int cttLen = -1;
 			String charSet = "UTF-8";
 			String cttEncoder = null;
 			Map<String, String> responseHeader = new HashMap<String, String>();
@@ -108,7 +111,7 @@ public class HttpClient
 						List<String> headerValueList = respHeaderMap.get(key);
 						StringBuffer sb = new StringBuffer();
 						for (String headerValue : headerValueList)
-							sb.append(headerValue);
+							sb.append(headerValue + ";");
 						responseHeader.put(key, sb.toString());
 				}
 
@@ -133,9 +136,19 @@ public class HttpClient
 					cttEncoder = responseHeader.get("Content-Encoding").toLowerCase().trim();
 			}
 
+			response.setRespHeaderMap(responseHeader);
+			
+			int len = 0;
+			if (cttLen == -1)
+				cttLen = 1024;
 			// 以字节收取返回信息
 			byte[] bytes = new byte[cttLen];
-			int len = in.read(bytes);
+			List<Byte> bodyBytes = new ArrayList<Byte>();
+			while (-1 != (len = in.read(bytes)))
+				CollectionUtils.copyArrayToList(bodyBytes, bytes, len);
+
+			len = bodyBytes.size();
+			bytes = CollectionUtils.toByteArray(bodyBytes);
 
 			// 是否需要解码
 			if (cttEncoder != null && cttEncoder.equals("gzip"))
@@ -161,8 +174,7 @@ public class HttpClient
 		}
 		catch (Exception e)
 		{
-			System.out.println("发送 POST 请求出现异常！" + e);
-			e.printStackTrace();
+			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流
 		finally
@@ -202,7 +214,7 @@ public class HttpClient
 		Response response = new Response();
 		try
 		{
-			String urlName = url + "?" + urlEncoder(param);
+			String urlName = url + "?" + param;
 			URL realUrl = new URL(urlName);
 			// 打开和URL之间的连接
 			URLConnection conn = realUrl.openConnection();
@@ -217,7 +229,6 @@ public class HttpClient
 			conn.connect();
 			// 获取所有响应头字段
 			Map<String, List<String>> respHeaderMap = conn.getHeaderFields();
-			response.setRespHeaderMap(respHeaderMap);
 			int cttLen = 0;
 			String charSet = "UTF-8";
 			String cttEncoder = null;
@@ -239,7 +250,7 @@ public class HttpClient
 						List<String> headerValueList = respHeaderMap.get(key);
 						StringBuffer sb = new StringBuffer();
 						for (String headerValue : headerValueList)
-							sb.append(headerValue);
+							sb.append(headerValue + ";");
 						responseHeader.put(key, sb.toString());
 				}
 
@@ -263,13 +274,22 @@ public class HttpClient
 				if (key.equals("Content-Encoding"))
 					cttEncoder = responseHeader.get("Content-Encoding").toLowerCase().trim();
 			}
+			
+			response.setRespHeaderMap(responseHeader);
 
 			// 获取返回流
 			in = conn.getInputStream();
+			int len = 0;
+			if (cttLen == -1)
+				cttLen = 1024;
 			// 以字节收取返回信息
 			byte[] bytes = new byte[cttLen];
-			int len = in.read(bytes);
+			List<Byte> bodyBytes = new ArrayList<Byte>();
+			while (-1 != (len = in.read(bytes)))
+				CollectionUtils.copyArrayToList(bodyBytes, bytes, len);
 
+			len = bodyBytes.size();
+			bytes = CollectionUtils.toByteArray(bodyBytes);
 			// 是否需要解码
 			if (cttEncoder != null && cttEncoder.equals("gzip"))
 			{

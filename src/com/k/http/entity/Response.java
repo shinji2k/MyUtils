@@ -1,6 +1,5 @@
 package com.k.http.entity;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,7 +9,7 @@ import java.util.Map;
 public class Response
 {
 	private String body;
-	private Map<String, List<String>> respHeaderMap;
+	private Map<String, String> respHeaderMap;
 
 	/**
 	 * @return the body
@@ -29,19 +28,20 @@ public class Response
 		this.body = body;
 	}
 
+	
 	/**
 	 * @return the respHeaderMap
 	 */
-	public Map<String, List<String>> getRespHeaderMap()
+	public Map<String, String> getRespHeaderMap()
 	{
 		return respHeaderMap;
 	}
 
+	
 	/**
-	 * @param respHeaderMap
-	 *            the respHeaderMap to set
+	 * @param respHeaderMap the respHeaderMap to set
 	 */
-	public void setRespHeaderMap(Map<String, List<String>> respHeaderMap)
+	public void setRespHeaderMap(Map<String, String> respHeaderMap)
 	{
 		this.respHeaderMap = respHeaderMap;
 	}
